@@ -1,0 +1,12 @@
+;$Id$
+
+name = Days To Days
+description = Enables for convert Days to Days
+core = 7.x
+package = User interface
+
+
+; Information added by drupal.org packaging script on 2010-09-24
+version = "7.x-dev"
+core = "7.x"
+project = "fields"

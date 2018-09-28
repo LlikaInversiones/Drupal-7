@@ -1,0 +1,38 @@
+name = tema_base
+description = Theme desarrollado en LLika Inversiones E.I.R.L.
+core = 7.x
+version = 7.x
+
+screenshot = screenshot.png
+engine = phptemplate
+
+regions[redes_sociales] = Redes Sociales
+regions[zona_contacto] = Zona Contacto
+regions[slider] = Slider
+regions[zona_vistas] = Zona Vistas
+regions[content] = Content
+regions[footer_first] = Footer First
+regions[footer_second] = Footer Second
+regions[footer_third] = Footer Third
+regions[by] = By Llika
+
+
+stylesheets[all][] = css/bootstrap.min.css
+stylesheets[all][] = css/general.css
+stylesheets[all][] = css/custom.css
+stylesheets[all][] = css/font-awesome.min.css
+
+exclude[css][] = 'misc/vertical-tabs.css'
+exclude[css][] = 'modules/aggregator/aggregator.css'
+exclude[css][] = 'modules/system/system.maintenance.css'
+exclude[css][] = 'modules/system/system.menus.css'
+exclude[css][] = 'modules/system/system.messages.css'
+exclude[css][] = 'modules/system/system.theme.css'
+
+scripts[] = js/bootstrap.min.js
+scripts[] = js/custom.js
+scripts[] = js/parallax.min.js
+
+features[] = main_menu
+features[] = logo
+features[] = favicon

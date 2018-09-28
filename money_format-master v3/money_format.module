@@ -1,0 +1,150 @@
+<?php
+/**
+ * Implements hook_field_formatter_view().
+ */
+
+function money_format_field_formatter_info() {
+    $formats = array(
+        'money_format_current' => array(
+            'label' => t('Money Format'),
+            'description' => t('Money format'),
+            'field types' => array('number_float','list_float','number_decimal','number_integer','text'),
+            'settings'  => array(
+                'current_money' => 'ud',
+            ),
+        ),
+   );
+    return $formats;
+}
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function money_format_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+    //Initialize the element variable
+    $element = array();
+    //Add your select box
+    $element['current_money'] = array(
+        '#type'           => 'select',
+        '#title'          => t('Money format'),
+        '#description'    => t('Select money format'),
+        '#default_value'  => $settings['current_money'],
+        '#options'        => array(
+            'ud' => 'Similar to: USD 100',
+            'db' => 'Similar to: $ 100 ',
+            'fd' => 'Similar to: USD $ 100',
+            'af' => 'Similar to: 100 USD',
+            'da' => 'Similar to: 100 $',
+            'af' => 'Similar to: 100 USD $',
+            'sb' => 'Similar to: S/ 100',
+            'sa' => 'Similar to: 100 S/',
+            'eb' => 'Similar to: € 100',
+            'ea' => 'Similar to: 100 €',
+        ),
+    );
+    return $element;
+}
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function money_format_field_formatter_settings_summary($field, $instance, $view_mode) {
+    $summary = t('Select money format');
+    return $summary;
+}
+/**
+* Split number
+*/
+function money_format_split($mount)
+{
+    $data = explode(".",$mount);
+    return $data[0] .  "<span class='centavos'>." . $data[1] . "</span>";
+}
+/**
+* Implements hook_field_formatter_view().
+*/
+function money_format_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+    $element = array(); // Initialize the var
+    $settings = $display['settings']; // get the settings
+    $size = $settings['current_money'];
+    switch ($size) {
+        case 'ud':
+            foreach ($items as $delta => $item)
+            {
+                $output = "<span class='money-label'>USD</span>" . money_format_split($item["value"]);
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'db':
+            foreach ($items as $delta => $item)
+            {
+                $output = "<span class='money-label'>$</span>" . money_format_split($item["value"]);
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'fd':
+            foreach ($items as $delta => $item)
+            {
+                $output = "<span class='money-label'>USD $ </span>" . money_format_split($item["value"]);
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'af':
+            foreach ($items as $delta => $item)
+            {
+                $output =  "" . money_format_split($item["value"]) . "<span class='money-label'>USD $</span>";
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'da':
+            foreach ($items as $delta => $item)
+            {
+                $output = "" . money_format_split($item["value"]) . "<span class='money-label'>$</span>";
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'af':
+            foreach ($items as $delta => $item)
+            {
+                $output = "" . money_format_split($item["value"]) . "<span class='money-label'>USD $</span>";
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'sb':
+            foreach ($items as $delta => $item)
+            {                
+                $output = "<span class='money-label'>S/. </span>" . money_format_split($item["value"]);
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'sa':
+            foreach ($items as $delta => $item)
+            {
+                $output = $item["value"]."<span class='money-label'>S/</span>";
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'eb':
+            foreach ($items as $delta => $item)
+            {
+                $output = "<span class='money-label'>€</span>".$item["value"];
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'eb':
+            foreach ($items as $delta => $item)
+            {
+                $output = $item["value"]."<span class='money-label'>€</span>";
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        default:
+            foreach ($items as $delta => $item)
+            {
+                $output =$item["value"];
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+    }
+    return $element;
+}

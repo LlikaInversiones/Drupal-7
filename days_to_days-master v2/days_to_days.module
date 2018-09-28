@@ -1,0 +1,141 @@
+<?php
+/**
+ * Implements hook_field_formatter_view().
+ */
+
+function days_to_days_field_formatter_info() {
+    $formats = array(
+        'days_for_human' => array(
+            'label' => t('Days for human'),
+            'description' => t('Display the number days for human.'),
+            'field types' => array(t('list_text'),t('number_float'),t('list_float')),
+            'settings'  => array( //Array of the settings we'll create
+                'days_to_days_human' => t('only_day_short'),
+            ),
+        ),
+   );
+    return $formats;
+}
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function days_to_days_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+    //Initialize the element variable
+    $element = array();
+    //Add your select box
+    $element['days_to_days_human'] = array(
+        '#type'           => 'select',
+        '#title'          => t('Format for days'),
+        '#description'    => t('Select format for days'), // Helper text
+        '#default_value'  => $settings['days_to_days_human'],
+        '#options'        => array(
+            'short_full'  => 'Similar to: 3D & 2N',
+            'only_day_short' => 'Similar to: 3D',
+            'only_day_full'  => 'Similar to: 3 Days',
+            'full'  => 'Similar to: 3 Days & 2 Nights',
+        ),
+    );
+    return $element;
+}
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function days_to_days_field_formatter_settings_summary($field, $instance, $view_mode) {
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+    $summary = t('Select @format format for human',array('@format'=> $settings['days_to_days_human']));
+    return $summary;
+}
+/**
+* Implements hook_field_formatter_view().
+*/
+function days_to_days_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+    $element = array(); // Initialize the var
+    $settings = $display['settings']; // get the settings
+    $size = $settings['days_to_days_human'];
+    switch ($size) {
+        case 'short_full':
+            foreach ($items as $delta => $item)
+            {
+                $output = human_days($item["value"],"sh");
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'only_day_short':
+            foreach ($items as $delta => $item)
+            {
+                $output = human_days($item["value"],"ods");
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'only_day_full':
+            foreach ($items as $delta => $item)
+            {
+                $output = human_days($item["value"],"odf");
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        case 'full':
+            foreach ($items as $delta => $item)
+            {
+                $output = human_days($item["value"],"f");
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+        default:
+            foreach ($items as $delta => $item)
+            {
+                $output =$item["value"];
+                $element[$delta] = array('#markup' => $output);
+            }
+            break;
+
+    }
+    return $element;
+}
+
+function night_nights($night,$format)
+{
+    if ($format == "sh")
+        return " N";
+    if ($night > 1)
+    {
+        return t("Night");
+    } else {
+        return t("Nights");
+    }
+}
+function day_days($day, $format)
+{
+    if ($format=="sh" or $format=="ods")
+        return " D ";
+    if ($day > 1)
+    {
+        return t("Days");
+    } else {
+        return t("Day");
+    }
+}
+function human_days($days,$format)
+{
+    $numberDays =  floatval($days);
+    if ($numberDays > 1)
+    {
+        $night = $numberDays - 1;
+        if ($format == "ods" or $format == "odf")
+            $output = "$numberDays <span class='dtd-label'>" . day_days($numberDays,$format) . "</span>";            
+        else
+            $output = "$numberDays <span class='dtd-label'>" . day_days($numberDays,$format) . "</span><span class='dtd-label'> & </span> $night  <span class='dtd-label'>" . night_nights($night,$format)."</span>";
+    } else {
+        if ($numberDays == 0.5){
+            return t("Half Day");
+        } else {
+             if ($numberDays == 1){
+                return t("Full Day");
+            }
+        }
+    }
+    return $output;
+}
